@@ -18,6 +18,7 @@ Thumbs.db
 # IDE-specific files
 .vscode/
 .idea/
+.qodo
 *.swp
 
 # Build files
