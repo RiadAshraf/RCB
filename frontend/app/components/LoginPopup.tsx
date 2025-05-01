@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -8,9 +9,35 @@ import { Button } from "@/components/ui/button";
 interface LoginPopupProps {
   onClose: () => void;
   isVisible: boolean;
+  onLoginSuccess: (email: string) => void; // Callback for login success
 }
 
-export default function LoginPopup({ onClose, isVisible }: LoginPopupProps) {
+export default function LoginPopup({ onClose, isVisible, onLoginSuccess }: LoginPopupProps) {
+  const [loginStatus, setLoginStatus] = useState<"idle" | "success" | "failure">("idle");
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    if (isVisible) {
+      setLoginStatus("idle"); // Reset login status when popup opens
+    }
+  }, [isVisible]);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Simulate login logic
+    const isSuccess = Math.random() > 0.5; // Random success/failure for demonstration
+    if (isSuccess) {
+      setLoginStatus("success");
+      onLoginSuccess(email); // Pass the email to the parent component
+      setTimeout(() => {
+        onClose(); // Close popup after success
+      }, 1000); // Optional delay for showing success message
+    } else {
+      setLoginStatus("failure");
+    }
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -44,7 +71,7 @@ export default function LoginPopup({ onClose, isVisible }: LoginPopupProps) {
           </p>
 
           {/* Login Form */}
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleLogin}>
             {/* Email Input */}
             <div>
               <Label htmlFor="email">Email</Label>
@@ -54,6 +81,8 @@ export default function LoginPopup({ onClose, isVisible }: LoginPopupProps) {
                 placeholder="m@example.com"
                 required
                 className="mt-1"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
@@ -80,6 +109,14 @@ export default function LoginPopup({ onClose, isVisible }: LoginPopupProps) {
               Login
             </Button>
           </form>
+
+          {/* Login Status Messages */}
+          {loginStatus === "success" && (
+            <p className="mt-4 text-green-600 text-center">Login successful!</p>
+          )}
+          {loginStatus === "failure" && (
+            <p className="mt-4 text-red-600 text-center">Login failed. Please try again.</p>
+          )}
 
           {/* Divider */}
           <div className="flex items-center my-4">
