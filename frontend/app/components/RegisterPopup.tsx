@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,9 +8,37 @@ import { Button } from "@/components/ui/button";
 interface RegisterPopupProps {
   onClose: () => void;
   isVisible: boolean;
+  onRegisterSuccess: (email: string) => void; // Callback for register success
 }
 
-export default function RegisterPopup({ onClose, isVisible }: RegisterPopupProps) {
+export default function RegisterPopup({ onClose, isVisible, onRegisterSuccess }: RegisterPopupProps) {
+  const [registerStatus, setRegisterStatus] = useState<"idle" | "success" | "failure">("idle");
+  const [email, setEmail] = useState(""); // Track email input
+
+  useEffect(() => {
+    if (isVisible) {
+      setRegisterStatus("idle"); // Reset register status when popup opens
+    }
+  }, [isVisible]);
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setTimeout(() => {
+      const isSuccess = Math.random() > 0.5; // Random success/failure for demonstration
+
+      if (isSuccess) {
+        setRegisterStatus("success");
+        onRegisterSuccess(email); // Notify parent component of successful registration
+        setTimeout(() => {
+          onClose(); // Close popup after success
+        }, 1000); // Optional delay for showing success message
+      } else {
+        setRegisterStatus("failure");
+      }
+    }, 2000); // Simulate a 2-second loading delay
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -43,7 +72,7 @@ export default function RegisterPopup({ onClose, isVisible }: RegisterPopupProps
           </p>
 
           {/* Register Form */}
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleRegister}>
             {/* Full Name Input */}
             <div>
               <Label htmlFor="full-name">Full Name</Label>
@@ -64,6 +93,8 @@ export default function RegisterPopup({ onClose, isVisible }: RegisterPopupProps
                 placeholder="me@example.com"
                 required
                 className="mt-1"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)} // Update email state
               />
             </div>
 
@@ -97,6 +128,13 @@ export default function RegisterPopup({ onClose, isVisible }: RegisterPopupProps
             </Button>
           </form>
 
+          {/* Register Status Messages */}
+          {registerStatus === "success" && (
+            <p className="mt-4 text-green-600 text-center">Registration successful!</p>
+          )}
+          {registerStatus === "failure" && (
+            <p className="mt-4 text-red-600 text-center">Registration failed. Please try again.</p>
+          )}
 
           {/* Divider */}
           <div className="flex items-center my-4">
@@ -105,7 +143,7 @@ export default function RegisterPopup({ onClose, isVisible }: RegisterPopupProps
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
 
-          {/* Google Login Button */}
+          {/* Google Register Button */}
           <Button
             variant="outline"
             className="w-full flex items-center justify-center gap-2 mt-4"

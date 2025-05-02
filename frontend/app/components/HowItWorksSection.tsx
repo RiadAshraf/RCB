@@ -9,7 +9,7 @@ export default function HowItWorksSection() {
   ];
 
   return (
-    <section className="py-16 text-center">
+    <section id="how-it-works" className="py-16 text-center">
       <h2 className="text-3xl font-bold">How It Works</h2>
       <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-8">
         {steps.map((step, index) => (

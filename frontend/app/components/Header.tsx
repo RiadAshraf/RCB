@@ -33,7 +33,16 @@ export default function Header() {
     setTimeout(() => {
       closeLoginPopup(); // Close the login popup
       setShowProgress(false); // Hide progress ring
-    }, 1000);
+    }, 1500);
+  };
+
+  const handleRegisterSuccess = (email: string) => {
+    setLoggedInUser(email); // Set the logged-in user's email
+    setShowProgress(true); // Show progress ring
+    setTimeout(() => {
+      closeRegisterPopup(); // Close the register popup
+      setShowProgress(false); // Hide progress ring
+    }, 1500);
   };
 
   const handleLogout = () => {
@@ -41,7 +50,14 @@ export default function Header() {
     setTimeout(() => {
       setLoggedInUser(null); // Clear the logged-in user's email
       setShowProgress(false); // Hide progress ring
-    }, 1000);
+    }, 1500);
+  };
+
+  const handleScrollToSection = (sectionId: string) => {
+    const section = document.querySelector(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: "smooth" }); // Smooth scrolling to the section
+    }
   };
 
   return (
@@ -61,14 +77,26 @@ export default function Header() {
             <Button asChild variant="link">
               <a href="/">Home</a>
             </Button>
-            <Button asChild variant="link">
-              <a href="/upcoming-marathons">Upcoming Marathons</a>
+            <Button
+              asChild
+              variant="link"
+              onClick={() => handleScrollToSection("upcoming-events")}
+            >
+              <a href="#upcoming-events">Upcoming Events</a>
             </Button>
-            <Button asChild variant="link">
-              <a href="/how-it-works">How It Works</a>
+            <Button
+              asChild
+              variant="link"
+              onClick={() => handleScrollToSection("how-it-works")}
+            >
+              <a href="#how-it-works">How It Works</a>
             </Button>
-            <Button asChild variant="link">
-              <a href="/contact-us">Contact Us</a>
+            <Button
+              asChild
+              variant="link"
+              onClick={() => handleScrollToSection("contact-us")}
+            >
+              <a href="#contact-us">Contact Us</a>
             </Button>
           </nav>
 
@@ -101,8 +129,7 @@ export default function Header() {
       {/* Progress Ring */}
       {showProgress && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
-          <div className="loader"></div>
-          <span className="text-white mt-4">Loading...</span>
+          <div className="loader animate-spin w-12 h-12 border-4 border-t-blue-500 border-gray-300 rounded-full"></div>
         </div>
       )}
 
@@ -114,7 +141,11 @@ export default function Header() {
       />
 
       {/* Register Popup */}
-      <RegisterPopup onClose={closeRegisterPopup} isVisible={showRegisterPopup} />
+      <RegisterPopup
+        onClose={closeRegisterPopup}
+        isVisible={showRegisterPopup}
+        onRegisterSuccess={handleRegisterSuccess} // Pass register success handler
+      />
     </>
   );
 }

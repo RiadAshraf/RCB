@@ -97,7 +97,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="mt-8 text-center text-gray-500">
-        &copy; 2025 Marathon Registration Platform. All rights reserved.
+        &copy; 2025 ArektaBoi ©. All rights reserved.
       </div>
     </footer>
   );

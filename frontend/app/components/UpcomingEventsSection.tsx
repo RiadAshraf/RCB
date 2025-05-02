@@ -25,7 +25,7 @@ export default function UpcomingEventsSection() {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section id="upcoming-events" className="py-16 bg-gray-50">
       <h2 className="text-3xl font-bold text-center">Upcoming Events</h2>
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
         {events.map((event, index) => (
