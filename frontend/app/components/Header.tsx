@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import LoginPopup from "./LoginPopup";
 import RegisterPopup from "./RegisterPopup";
+import Link from "next/link";
 
 export default function Header() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
@@ -68,14 +69,14 @@ export default function Header() {
           {/* Logo */}
           <div className="text-blue-600 text-2xl font-bold">
             <Button asChild variant="link">
-              <a href="/">Logo</a>
+              <Link href="/">Logo</Link>
             </Button>
           </div>
 
           {/* Navigation Links */}
           <nav className="hidden md:flex space-x-6">
             <Button asChild variant="link">
-              <a href="/">Home</a>
+              <Link href="/">Home</Link>
             </Button>
             <Button
               asChild

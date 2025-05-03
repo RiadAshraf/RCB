@@ -31,7 +31,12 @@ export default function UpcomingEventsSection() {
         {events.map((event, index) => (
           <Card key={index} className="shadow-lg">
             <div className="relative w-full h-0 pb-[56.25%]">
-              <Image src={event.image} alt={event.title} layout="fill" objectFit="cover" />
+              <Image
+                src={event.image}
+                alt={event.title}
+                fill
+                style={{ objectFit: "cover" }}
+              />
             </div>
             <CardContent>
               <h3 className="text-xl font-semibold">{event.title}</h3>

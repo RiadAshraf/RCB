@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface LoginPopupProps {
   onClose: () => void;
@@ -130,10 +131,11 @@ export default function LoginPopup({ onClose, isVisible, onLoginSuccess }: Login
             variant="outline"
             className="w-full flex items-center justify-center gap-2"
           >
-            <img
+            <Image
               src="/google-icon.svg"
               alt="Google Icon"
-              className="w-5 h-5"
+              width={20}
+              height={20}
             />
             Login with Gmail
           </Button>

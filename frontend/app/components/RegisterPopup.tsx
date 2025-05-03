@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 interface RegisterPopupProps {
   onClose: () => void;
@@ -148,10 +149,11 @@ export default function RegisterPopup({ onClose, isVisible, onRegisterSuccess }:
             variant="outline"
             className="w-full flex items-center justify-center gap-2 mt-4"
           >
-            <img
+            <Image
               src="/google-icon.svg"
               alt="Google Icon"
-              className="w-5 h-5"
+              width={20}
+              height={20}
             />
             Register with Gmail
           </Button>

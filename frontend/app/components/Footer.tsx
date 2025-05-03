@@ -85,7 +85,7 @@ export default function Footer() {
           <h3 className="text-lg font-bold text-red-500">Contact</h3>
           <ul className="mt-4 space-y-2 text-gray-400">
             <li>
-              <i className="fas fa-map-marker-alt"></i> 123 Runner's Way, Marathon City
+              <i className="fas fa-map-marker-alt"></i> 123 Runner&#39;s Way, Marathon City
             </li>
             <li>
               <i className="fas fa-envelope"></i> info@marathonplatform.com
