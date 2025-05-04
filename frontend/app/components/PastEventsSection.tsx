@@ -128,7 +128,7 @@ export default function PastEventsSection() {
           </Card>
         </div>
 
-        <h2 className="text-3xl font-bold text-center mt-16 mb-4">Past Events</h2>
+        {/* <h2 className="text-3xl font-bold text-center mt-16 mb-4">Past Events</h2>
         <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
           Relive the memories from our previous running events across Bangladesh. These successful runs 
           showcased the spirit and determination of our running community.
@@ -157,7 +157,7 @@ export default function PastEventsSection() {
               </CardContent>
             </Card>
           ))}
-        </div>
+        </div> */}
       </div>
     </section>
   );
