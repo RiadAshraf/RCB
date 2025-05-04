@@ -1,51 +1,97 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function UpcomingEventsSection() {
-  const events = [
-    {
-      image: "/path-to-nyc-marathon.jpg",
-      title: "New York City Marathon",
-      description: "Experience the iconic route through all five boroughs of NYC.",
-      date: "April 30, 2025",
-    },
-    {
-      image: "/path-to-nyc-marathon.jpg",
-      title: "Miami Beach Half Marathon",
-      description: "Run along the beautiful coastline with ocean views.",
-      date: "May 15, 2025",
-    },
-    {
-      image: "/path-to-nyc-marathon.jpg",
-      title: "Rocky Mountain Trail Run",
-      description: "Challenge yourself on scenic mountain trails with breathtaking views.",
-      date: "June 8, 2025",
-    },
-  ];
+  const router = useRouter(); // Initialize the router
+  
+  const handleBookSlotClick = () => {
+    router.push("/booking"); // Navigate to the BookingPage
+  };
+  
+  const handleViewDetailsClick = () => {
+    router.push("/palestine-run-2025");
+  };
+  
+  const featuredEvent = {
+    title: "ArektaBoi Run for Palestine",
+    date: "18th July, 2025",
+    location: "CRB, Chattogram",
+    image: "/palestine-run.jpg",
+    slogan: "Run for a Cause. Run for Freedom. Run for Palestine.",
+    description: "This July 18th, the iconic CRB, Chattogram will come alive with passion, energy, and unity as we lace up not just for fitness — but for solidarity. After last year's incredible success, Runners Community Bangladesh is proud to host the second edition of our community run.",
+    categories: ["10K Challenge", "5K Fun Run"],
+    registrationStatus: "Early Bird Registration Open"
+  };
 
   return (
     <section id="upcoming-events" className="py-16 bg-gray-50">
-      <h2 className="text-3xl font-bold text-center">Upcoming Events</h2>
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-        {events.map((event, index) => (
-          <Card key={index} className="shadow-lg">
-            <div className="relative w-full h-0 pb-[56.25%]">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl font-bold text-center mb-4">Upcoming Event</h2>
+        <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
+          Join us for our next major running event in Chattogram. Be part of a movement that combines 
+          fitness with solidarity and community support.
+        </p>
+        
+        <div className="max-w-5xl mx-auto">
+          <Card className="shadow-lg overflow-hidden">
+            {/* Image Section - Full Width */}
+            <div className="relative w-full h-[300px]">
               <Image
-                src={event.image}
-                alt={event.title}
+                src={featuredEvent.image}
+                alt={featuredEvent.title}
                 fill
                 style={{ objectFit: "cover" }}
               />
+              <div className="absolute top-4 left-4">
+                <Badge className="bg-green-600">Upcoming</Badge>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                <h3 className="text-white font-bold text-2xl">{featuredEvent.title}</h3>
+                <p className="text-white/90">📅 {featuredEvent.date} | {featuredEvent.location} 🇵🇸</p>
+              </div>
             </div>
-            <CardContent>
-              <h3 className="text-xl font-semibold">{event.title}</h3>
-              <p className="text-gray-600 mt-2">{event.description}</p>
-              <p className="text-gray-500 mt-4">{event.date}</p>
-              <Button className="mt-4">Register</Button>
+            
+            {/* Content Section */}
+            <CardContent className="p-6">
+              <p className="text-red-600 font-medium italic mb-4">🕊️ {featuredEvent.slogan}</p>
+              <p className="text-gray-600 mb-6">{featuredEvent.description}</p>
+              
+              <div className="flex flex-wrap gap-2 mb-6">
+                {featuredEvent.categories.map((category, index) => (
+                  <Badge key={index} variant="outline" className="px-3 py-1 border-gray-300">
+                    {category}
+                  </Badge>
+                ))}
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <Button 
+                  className="bg-red-600 text-white hover:bg-red-700"
+                  onClick={handleViewDetailsClick}
+                >
+                  View Event Details
+                </Button>
+
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-blue-600">{featuredEvent.registrationStatus}</Badge>
+                  <Button 
+                    variant="outline" 
+                    className="border-red-600 text-red-600 hover:bg-red-50"
+                    onClick={handleBookSlotClick}
+                  >
+                    Register Now
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
-        ))}
+        </div>
       </div>
     </section>
   );

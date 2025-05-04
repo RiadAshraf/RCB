@@ -1,11 +1,9 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
-import { Card } from "@/components/ui/card";
-import { CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
+import { Card } from "@/components/ui/card"; // Removed CardContent since it's unused
+import Image from "next/image"; // Added missing Image import
+import { Button } from "@/components/ui/button"; // Added missing Button import
 
 // Featured past event data
 const featuredPastEvent = {
@@ -26,7 +24,9 @@ const featuredPastEvent = {
   contactInfo: "01857518845"
 };
 
-// Sample past events data
+// Sample past events data - commenting out since it's currently unused
+// Alternatively, you could remove it completely if you don't plan to use it
+/*
 const pastEvents = [
   {
     title: "CTG RUN 10K - Chattogram",
@@ -47,13 +47,14 @@ const pastEvents = [
     image: "/past-event-3.jpg",
   },
 ];
+*/
 
 export default function PastEventsSection() {
   const router = useRouter(); // Initialize the router
   
   // Handler function to navigate to ctg2024 page
   const handleViewGallery = () => {
-    router.push("/ctg2024");
+    router.push("/ctg-run-2024");
   };
 
   return (
@@ -61,7 +62,7 @@ export default function PastEventsSection() {
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-4">Featured Past Event</h2>
         <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
-          Relive the memories from our most successful running event in Bangladesh. 
+          Relive the memories from our most successful running event in Chattogram. 
           This run showcased the spirit and determination of our running community.
         </p>
         
@@ -86,16 +87,16 @@ export default function PastEventsSection() {
                 
                 <div className="mt-6 grid grid-cols-3 gap-4 text-center">
                   <div className="bg-gray-100 p-3 rounded-lg">
-                    <p className="text-xl font-bold text-red-600">{featuredPastEvent.stats.participants}</p>
-                    <p className="text-sm text-gray-500">Participants</p>
+                    <p className="font-semibold">{featuredPastEvent.stats.participants}</p>
+                    <p className="text-sm text-gray-600">Participants</p>
                   </div>
                   <div className="bg-gray-100 p-3 rounded-lg">
-                    <p className="text-xl font-bold text-red-600">{featuredPastEvent.stats.distance}</p>
-                    <p className="text-sm text-gray-500">Distance</p>
+                    <p className="font-semibold">{featuredPastEvent.stats.distance}</p>
+                    <p className="text-sm text-gray-600">Distance</p>
                   </div>
                   <div className="bg-gray-100 p-3 rounded-lg">
-                    <p className="text-xl font-bold text-red-600">{featuredPastEvent.stats.finishers}</p>
-                    <p className="text-sm text-gray-500">Finishers</p>
+                    <p className="font-semibold">{featuredPastEvent.stats.finishers}</p>
+                    <p className="text-sm text-gray-600">Finishers</p>
                   </div>
                 </div>
                 
@@ -108,56 +109,18 @@ export default function PastEventsSection() {
                   </ul>
                 </div>
                 
-                <div className="mt-6">
-                  <p className="text-gray-700 font-medium">
-                    Contact Info: {featuredPastEvent.contactInfo}
-                  </p>
-                </div>
-                
                 <div className="mt-4 flex justify-between items-center">
-                  <Button 
-                    className="bg-red-600 text-white hover:bg-red-700"
-                    onClick={handleViewGallery} // Add the click handler
-                  >
-                    View Full Gallery
+                  <Button onClick={handleViewGallery} className="bg-blue-600 text-white hover:bg-blue-700">
+                    View Gallery
                   </Button>
-                  <span className="text-sm font-medium px-3 py-1 bg-red-100 text-red-800 rounded-full">Completed</span>
+                  <p className="text-sm text-gray-500">Contact: {featuredPastEvent.contactInfo}</p>
                 </div>
               </div>
             </div>
           </Card>
         </div>
-
-        {/* <h2 className="text-3xl font-bold text-center mt-16 mb-4">Past Events</h2>
-        <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
-          Relive the memories from our previous running events across Bangladesh. These successful runs 
-          showcased the spirit and determination of our running community.
-        </p>
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {pastEvents.map((event, index) => (
-            <Card key={index} className="shadow-lg transition-transform hover:scale-105">
-              <div className="relative w-full h-0 pb-[56.25%]">
-                <Image
-                  src={event.image}
-                  alt={event.title}
-                  fill
-                  style={{ objectFit: "cover" }}
-                />
-              </div>
-              <CardContent className="pt-4">
-                <h3 className="text-xl font-semibold">{event.title}</h3>
-                <p className="text-gray-600 mt-2">{event.description}</p>
-                <p className="text-gray-500 mt-4 font-medium">{event.date}</p>
-                <div className="mt-4 flex justify-between items-center">
-                  <Button variant="outline" className="border-gray-300">
-                    View Gallery
-                  </Button>
-                  <span className="text-sm text-green-600 font-medium">Completed</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div> */}
+        
+        {/* Commented out section for past events grid */}
       </div>
     </section>
   );

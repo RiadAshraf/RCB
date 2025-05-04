@@ -6,36 +6,36 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
-interface RegisterPopupProps {
+interface SignUpPopupProps {
   onClose: () => void;
   isVisible: boolean;
-  onRegisterSuccess: (email: string) => void; // Callback for register success
+  onSignUpSuccess: (email: string) => void; // Callback for sign up success
 }
 
-export default function RegisterPopup({ onClose, isVisible, onRegisterSuccess }: RegisterPopupProps) {
-  const [registerStatus, setRegisterStatus] = useState<"idle" | "success" | "failure">("idle");
+export default function SignUpPopup({ onClose, isVisible, onSignUpSuccess }: SignUpPopupProps) {
+  const [signUpStatus, setSignUpStatus] = useState<"idle" | "success" | "failure">("idle");
   const [email, setEmail] = useState(""); // Track email input
 
   useEffect(() => {
     if (isVisible) {
-      setRegisterStatus("idle"); // Reset register status when popup opens
+      setSignUpStatus("idle"); // Reset sign up status when popup opens
     }
   }, [isVisible]);
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleSignUp = (e: React.FormEvent) => {
     e.preventDefault();
 
     setTimeout(() => {
       const isSuccess = Math.random() > 0.5; // Random success/failure for demonstration
 
       if (isSuccess) {
-        setRegisterStatus("success");
-        onRegisterSuccess(email); // Notify parent component of successful registration
+        setSignUpStatus("success");
+        onSignUpSuccess(email); // Notify parent component of successful sign up
         setTimeout(() => {
           onClose(); // Close popup after success
         }, 1000); // Optional delay for showing success message
       } else {
-        setRegisterStatus("failure");
+        setSignUpStatus("failure");
       }
     }, 2000); // Simulate a 2-second loading delay
   };
@@ -46,8 +46,8 @@ export default function RegisterPopup({ onClose, isVisible, onRegisterSuccess }:
     <div
       className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50"
       role="dialog"
-      aria-labelledby="register-title"
-      aria-describedby="register-description"
+      aria-labelledby="signup-title"
+      aria-describedby="signup-description"
       onClick={onClose} // Close popup when clicking outside
     >
       <div
@@ -65,15 +65,15 @@ export default function RegisterPopup({ onClose, isVisible, onRegisterSuccess }:
 
         {/* Popup Content */}
         <div>
-          <h1 id="register-title" className="text-2xl font-bold mb-4">
-            Register
+          <h1 id="signup-title" className="text-2xl font-bold mb-4">
+            Sign Up
           </h1>
-          <p id="register-description" className="text-gray-500 mb-6">
+          <p id="signup-description" className="text-gray-500 mb-6">
             Enter your information to create an account.
           </p>
 
-          {/* Register Form */}
-          <form className="space-y-4" onSubmit={handleRegister}>
+          {/* Sign Up Form */}
+          <form className="space-y-4" onSubmit={handleSignUp}>
             {/* Full Name Input */}
             <div>
               <Label htmlFor="full-name">Full Name</Label>
@@ -123,18 +123,18 @@ export default function RegisterPopup({ onClose, isVisible, onRegisterSuccess }:
               />
             </div>
 
-            {/* Register Button */}
+            {/* Sign Up Button */}
             <Button type="submit" className="w-full bg-green-600">
-              Register
+              Sign Up
             </Button>
           </form>
 
-          {/* Register Status Messages */}
-          {registerStatus === "success" && (
-            <p className="mt-4 text-green-600 text-center">Registration successful!</p>
+          {/* Sign Up Status Messages */}
+          {signUpStatus === "success" && (
+            <p className="mt-4 text-green-600 text-center">Sign up successful!</p>
           )}
-          {registerStatus === "failure" && (
-            <p className="mt-4 text-red-600 text-center">Registration failed. Please try again.</p>
+          {signUpStatus === "failure" && (
+            <p className="mt-4 text-red-600 text-center">Sign up failed. Please try again.</p>
           )}
 
           {/* Divider */}
@@ -144,7 +144,7 @@ export default function RegisterPopup({ onClose, isVisible, onRegisterSuccess }:
             <div className="flex-grow border-t border-gray-300"></div>
           </div>
 
-          {/* Google Register Button */}
+          {/* Google Sign Up Button */}
           <Button
             variant="outline"
             className="w-full flex items-center justify-center gap-2 mt-4"
@@ -155,7 +155,7 @@ export default function RegisterPopup({ onClose, isVisible, onRegisterSuccess }:
               width={20}
               height={20}
             />
-            Register with Gmail
+            Sign Up with Gmail
           </Button>
         </div>
       </div>

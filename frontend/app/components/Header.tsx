@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import LoginPopup from "./LoginPopup";
-import RegisterPopup from "./RegisterPopup";
 import Link from "next/link";
+import SignUpPopup from "./SignUpPopup";
 
 export default function Header() {
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [showRegisterPopup, setShowRegisterPopup] = useState(false);
+  const [showSignUpPopup, setShowSignUpPopup] = useState(false); // Changed from showRegisterPopup
   const [loggedInUser, setLoggedInUser] = useState<string | null>(null); // Track logged-in user email
   const [showProgress, setShowProgress] = useState(false); // State to control progress ring visibility
 
@@ -16,16 +16,16 @@ export default function Header() {
     setShowLoginPopup(true);
   };
 
-  const handleRegisterClick = () => {
-    setShowRegisterPopup(true);
+  const handleSignUpClick = () => { // Changed from handleRegisterClick
+    setShowSignUpPopup(true);
   };
 
   const closeLoginPopup = () => {
     setShowLoginPopup(false);
   };
 
-  const closeRegisterPopup = () => {
-    setShowRegisterPopup(false);
+  const closeSignUpPopup = () => { // Changed from closeRegisterPopup
+    setShowSignUpPopup(false);
   };
 
   const handleLoginSuccess = (email: string) => {
@@ -37,11 +37,11 @@ export default function Header() {
     }, 1500);
   };
 
-  const handleRegisterSuccess = (email: string) => {
+  const handleSignUpSuccess = (email: string) => { // Changed from handleRegisterSuccess
     setLoggedInUser(email); // Set the logged-in user's email
     setShowProgress(true); // Show progress ring
     setTimeout(() => {
-      closeRegisterPopup(); // Close the register popup
+      closeSignUpPopup(); // Close the sign up popup
       setShowProgress(false); // Hide progress ring
     }, 1500);
   };
@@ -54,12 +54,12 @@ export default function Header() {
     }, 1500);
   };
 
-  const handleScrollToSection = (sectionId: string) => {
-    const section = document.querySelector(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: "smooth" }); // Smooth scrolling to the section
-    }
-  };
+  // const handleScrollToSection = (sectionId: string) => {
+  //   const section = document.querySelector(sectionId);
+  //   if (section) {
+  //     section.scrollIntoView({ behavior: "smooth" }); // Smooth scrolling to the section
+  //   }
+  // };
 
   return (
     <>
@@ -72,34 +72,6 @@ export default function Header() {
               <Link href="/">Logo</Link>
             </Button>
           </div>
-
-          {/* Navigation Links */}
-          <nav className="hidden md:flex space-x-6">
-            <Button asChild variant="link">
-              <Link href="/">Home</Link>
-            </Button>
-            <Button
-              asChild
-              variant="link"
-              onClick={() => handleScrollToSection("upcoming-events")}
-            >
-              <a href="#upcoming-events">Upcoming Events</a>
-            </Button>
-            <Button
-              asChild
-              variant="link"
-              onClick={() => handleScrollToSection("how-it-works")}
-            >
-              <a href="#how-it-works">How It Works</a>
-            </Button>
-            <Button
-              asChild
-              variant="link"
-              onClick={() => handleScrollToSection("contact-us")}
-            >
-              <a href="#contact-us">Contact Us</a>
-            </Button>
-          </nav>
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
@@ -117,9 +89,9 @@ export default function Header() {
                   Login
                 </Button>
 
-                {/* Register Button */}
-                <Button variant="ghost" onClick={handleRegisterClick}>
-                  Register
+                {/* Sign Up Button */}
+                <Button variant="ghost" onClick={handleSignUpClick}>
+                  Sign Up
                 </Button>
               </>
             )}
@@ -141,11 +113,11 @@ export default function Header() {
         onLoginSuccess={handleLoginSuccess} // Pass login success handler
       />
 
-      {/* Register Popup */}
-      <RegisterPopup
-        onClose={closeRegisterPopup}
-        isVisible={showRegisterPopup}
-        onRegisterSuccess={handleRegisterSuccess} // Pass register success handler
+      {/* Sign Up Popup */}
+      <SignUpPopup
+        onClose={closeSignUpPopup}
+        isVisible={showSignUpPopup}
+        onSignUpSuccess={handleSignUpSuccess} // Pass sign up success handler
       />
     </>
   );

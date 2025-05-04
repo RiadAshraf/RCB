@@ -9,8 +9,8 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 
 // Import the extracted components and data
-import StorySection from "@/components/ctg-run/StorySection"; 
-import StatItem from "@/components/ctg-run/StatItem";
+import StorySection from "@/components/ctg-run-2024/StorySection"; 
+import StatItem from "@/components/ctg-run-2024/StatItem";
 import { eventDetails } from "../data/ctg-run-details";
 
 export default function Page() {
