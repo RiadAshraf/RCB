@@ -13,6 +13,14 @@ import { useInView } from "react-intersection-observer";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../../context/AuthContext";
 import { navigateIfAuthenticated } from "../../utils/navigation";
+import 'leaflet/dist/leaflet.css';
+import dynamic from 'next/dynamic';
+
+// Dynamically import the map component to avoid SSR issues
+const Map = dynamic(
+  () => import('@/components/EventMap'),
+  { ssr: false }
+);
 
 export default function Page() {
   const router = useRouter();
@@ -22,6 +30,9 @@ export default function Page() {
   const { ref: infoRef, inView: infoInView } = useInView({ triggerOnce: true, threshold: 0.2 });
   const { ref: categoriesRef, inView: categoriesInView } = useInView({ triggerOnce: true, threshold: 0.2 });
   const { ref: benefitsRef, inView: benefitsInView } = useInView({ triggerOnce: true, threshold: 0.2 });
+
+  // CRB Chittagong coordinates as a properly typed tuple 22.340995779305892, 91.82034516581761
+  const eventLocation: [number, number] = [22.340995779305892, 91.82034516581761]; // Approximate coordinates for Chittagong
 
   // Show login popup function
   const showLoginPopup = () => {
@@ -203,14 +214,6 @@ export default function Page() {
                         <div>
                           <p className="font-medium">Email</p>
                           <p className="text-gray-600">palestinerun@rcb.com</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-3">
-                        <div className="text-2xl">🌐</div>
-                        <div>
-                          <p className="font-medium">Website</p>
-                          <p className="text-gray-600">www.runnersbd.com</p>
                         </div>
                       </div>
                     </CardContent>
@@ -554,8 +557,12 @@ export default function Page() {
                           <span className="text-xl mr-2">🗺️</span> Location
                         </h3>
                         <p className="text-gray-700 mb-2">CRB, Chittagong</p>
-                        <div className="bg-gray-200 h-48 rounded-lg flex items-center justify-center">
-                          <p className="text-gray-600">Map will be available soon</p>
+                        <div className="h-64 rounded-lg overflow-hidden">
+                          <Map 
+                            position={eventLocation} 
+                            zoom={15} 
+                            title="Palestine Run 2025 Location"
+                          />
                         </div>
                       </div>
                       
@@ -609,7 +616,13 @@ export default function Page() {
                         </h3>
                         <p className="text-gray-700 mb-4">Follow us on social media for the latest updates:</p>
                         <div className="flex gap-4">
-                          <Button variant="outline" className="flex-1">Facebook</Button>
+                          <Button 
+                            variant="outline" 
+                            className="flex-1"
+                            onClick={() => window.open("https://www.facebook.com/profile.php?id=61557362787443", "_blank")}
+                          >
+                            <span className="mr-2">📱</span>Facebook
+                          </Button>
                           <Button variant="outline" className="flex-1">Instagram</Button>
                         </div>
                         <p className="mt-4 text-gray-700">Tag your photos with:</p>
