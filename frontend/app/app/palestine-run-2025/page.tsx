@@ -10,14 +10,29 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useInView } from "react-intersection-observer";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../../context/AuthContext";
+import { navigateIfAuthenticated } from "../../utils/navigation";
 
 export default function Page() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState("overview");
   const { ref: heroRef, inView: heroInView } = useInView({ triggerOnce: true });
   const { ref: infoRef, inView: infoInView } = useInView({ triggerOnce: true, threshold: 0.2 });
   const { ref: categoriesRef, inView: categoriesInView } = useInView({ triggerOnce: true, threshold: 0.2 });
   const { ref: benefitsRef, inView: benefitsInView } = useInView({ triggerOnce: true, threshold: 0.2 });
-  
+
+  // Show login popup function
+  const showLoginPopup = () => {
+    window.dispatchEvent(new CustomEvent("show-login-popup"));
+  };
+
+  // Handle registration button click
+  const handleRegisterClick = () => {
+    navigateIfAuthenticated(router, "/booking", isAuthenticated, showLoginPopup);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -53,7 +68,9 @@ export default function Page() {
               🕊️ Run for a Cause. Run for Freedom. Run for Palestine.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg">
+              <Button className="bg-red-600 hover:bg-red-700 text-white px-8 py-6 text-lg"
+              onClick={handleRegisterClick}
+              >
                 Register Now
               </Button>
             </div>
@@ -120,7 +137,10 @@ export default function Page() {
                     </p>
                     
                     <div className="pt-4">
-                      <Button className="bg-red-600 hover:bg-red-700">Register Now</Button>
+                      <Button className="bg-red-600 hover:bg-red-700"
+                              onClick={handleRegisterClick}>
+                        Register Now
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -510,8 +530,9 @@ export default function Page() {
                   </div>
                   
                   <div className="mt-8 text-center">
-                    <Button className="bg-red-600 hover:bg-red-700 text-lg px-8 py-6">
-                      Register Now
+                    <Button className="bg-red-600 hover:bg-red-700 text-lg px-8 py-6" 
+                            onClick={handleRegisterClick}>
+                        Register Now
                     </Button>
                   </div>
                 </CardContent>
@@ -610,7 +631,8 @@ export default function Page() {
                         <p className="text-gray-600 mt-2">Be part of a powerful cause. Let your stride speak louder than words.</p>
                         
                         <div className="mt-6">
-                          <Button className="bg-red-600 hover:bg-red-700 mx-auto">Register Now</Button>
+                          <Button className="bg-red-600 hover:bg-red-700 mx-auto" 
+                            onClick={handleRegisterClick}>Register Now</Button>
                         </div>
                         
                         <p className="mt-6 text-sm text-gray-500">📣 Stay tuned for registration links, exciting announcements, and surprises!</p>

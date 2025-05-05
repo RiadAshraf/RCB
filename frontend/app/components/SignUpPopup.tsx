@@ -10,9 +10,15 @@ interface SignUpPopupProps {
   onClose: () => void;
   isVisible: boolean;
   onSignUpSuccess: (email: string) => void; // Callback for sign up success
+  onSwitchToLogin?: () => void; // New prop to switch to login popup
 }
 
-export default function SignUpPopup({ onClose, isVisible, onSignUpSuccess }: SignUpPopupProps) {
+export default function SignUpPopup({ 
+  onClose, 
+  isVisible, 
+  onSignUpSuccess,
+  onSwitchToLogin 
+}: SignUpPopupProps) {
   const [signUpStatus, setSignUpStatus] = useState<"idle" | "success" | "failure">("idle");
   const [email, setEmail] = useState(""); // Track email input
 
@@ -127,6 +133,28 @@ export default function SignUpPopup({ onClose, isVisible, onSignUpSuccess }: Sig
             <Button type="submit" className="w-full bg-green-600">
               Sign Up
             </Button>
+
+            {/* Switch to Login */}
+            <div className="mt-4 text-center">
+              <p className="text-gray-600">
+                Already have an account?{" "}
+                <Button 
+                  variant="link" 
+                  className="text-blue-600 p-0 h-auto font-medium"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (onSwitchToLogin) {
+                      onClose(); // Close signup popup
+                      setTimeout(() => {
+                        onSwitchToLogin(); // Open login popup after a brief delay
+                      }, 100); // Small delay for smoother transition
+                    }
+                  }}
+                >
+                  Login
+                </Button>
+              </p>
+            </div>
           </form>
 
           {/* Sign Up Status Messages */}

@@ -1,22 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import LoginPopup from "./LoginPopup";
-import Link from "next/link";
 import SignUpPopup from "./SignUpPopup";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
+import { handlePostLoginRedirect } from "../utils/navigation";
 
 export default function Header() {
+  const router = useRouter();
+  const { isAuthenticated, userEmail, login, logout } = useAuth();
+  
   const [showLoginPopup, setShowLoginPopup] = useState(false);
-  const [showSignUpPopup, setShowSignUpPopup] = useState(false); // Changed from showRegisterPopup
-  const [loggedInUser, setLoggedInUser] = useState<string | null>(null); // Track logged-in user email
-  const [showProgress, setShowProgress] = useState(false); // State to control progress ring visibility
+  const [showSignUpPopup, setShowSignUpPopup] = useState(false);
+  const [showProgress, setShowProgress] = useState(false);
+
+  // Listen for custom events to show login popup
+  useEffect(() => {
+    const handleShowLogin = () => {
+      setShowLoginPopup(true);
+    };
+    
+    window.addEventListener("show-login-popup", handleShowLogin);
+    
+    return () => {
+      window.removeEventListener("show-login-popup", handleShowLogin);
+    };
+  }, []);
 
   const handleLoginClick = () => {
     setShowLoginPopup(true);
   };
 
-  const handleSignUpClick = () => { // Changed from handleRegisterClick
+  const handleSignUpClick = () => {
     setShowSignUpPopup(true);
   };
 
@@ -24,72 +42,75 @@ export default function Header() {
     setShowLoginPopup(false);
   };
 
-  const closeSignUpPopup = () => { // Changed from closeRegisterPopup
+  const closeSignUpPopup = () => {
     setShowSignUpPopup(false);
   };
 
+  const switchToSignUp = () => {
+    setShowLoginPopup(false);
+    setShowSignUpPopup(true);
+  };
+  
+  const switchToLogin = () => {
+    setShowSignUpPopup(false);
+    setShowLoginPopup(true);
+  };
+
   const handleLoginSuccess = (email: string) => {
-    setLoggedInUser(email); // Set the logged-in user's email
-    setShowProgress(true); // Show progress ring
+    setShowProgress(true);
+    
     setTimeout(() => {
-      closeLoginPopup(); // Close the login popup
-      setShowProgress(false); // Hide progress ring
+      login(email);
+      closeLoginPopup();
+      setShowProgress(false);
+      
+      // Handle redirection if needed
+      handlePostLoginRedirect(router);
     }, 1500);
   };
 
-  const handleSignUpSuccess = (email: string) => { // Changed from handleRegisterSuccess
-    setLoggedInUser(email); // Set the logged-in user's email
-    setShowProgress(true); // Show progress ring
+  const handleSignUpSuccess = (email: string) => {
+    setShowProgress(true);
+    
     setTimeout(() => {
-      closeSignUpPopup(); // Close the sign up popup
-      setShowProgress(false); // Hide progress ring
+      login(email);
+      closeSignUpPopup();
+      setShowProgress(false);
     }, 1500);
   };
 
   const handleLogout = () => {
-    setShowProgress(true); // Show progress ring
+    setShowProgress(true);
+    
     setTimeout(() => {
-      setLoggedInUser(null); // Clear the logged-in user's email
-      setShowProgress(false); // Hide progress ring
+      logout();
+      setShowProgress(false);
     }, 1500);
   };
 
-  // const handleScrollToSection = (sectionId: string) => {
-  //   const section = document.querySelector(sectionId);
-  //   if (section) {
-  //     section.scrollIntoView({ behavior: "smooth" }); // Smooth scrolling to the section
-  //   }
-  // };
-
   return (
     <>
-      {/* Header */}
       <header className="bg-white shadow-md">
         <div className="container mx-auto flex items-center justify-between py-4 px-6">
-          {/* Logo */}
           <div className="text-blue-600 text-2xl font-bold">
-            <Button asChild variant="link">
-              <Link href="/">Logo</Link>
-            </Button>
+            <Link href="/">
+              <span>Runners Community Bangladesh</span>
+            </Link>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-            {loggedInUser ? (
+            {isAuthenticated ? (
               <>
-                <span className="text-gray-700 font-medium">Hi, {loggedInUser}</span>
+                <span className="text-gray-700 font-medium">Hi, {userEmail}</span>
                 <Button variant="ghost" onClick={handleLogout}>
                   Logout
                 </Button>
               </>
             ) : (
               <>
-                {/* Login Button */}
                 <Button variant="ghost" onClick={handleLoginClick}>
                   Login
                 </Button>
-
-                {/* Sign Up Button */}
                 <Button variant="ghost" onClick={handleSignUpClick}>
                   Sign Up
                 </Button>
@@ -99,25 +120,24 @@ export default function Header() {
         </div>
       </header>
 
-      {/* Progress Ring */}
       {showProgress && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 z-50">
           <div className="loader animate-spin w-12 h-12 border-4 border-t-blue-500 border-gray-300 rounded-full"></div>
         </div>
       )}
 
-      {/* Login Popup */}
       <LoginPopup
         onClose={closeLoginPopup}
         isVisible={showLoginPopup}
-        onLoginSuccess={handleLoginSuccess} // Pass login success handler
+        onLoginSuccess={handleLoginSuccess}
+        onSwitchToSignUp={switchToSignUp}
       />
 
-      {/* Sign Up Popup */}
       <SignUpPopup
         onClose={closeSignUpPopup}
         isVisible={showSignUpPopup}
-        onSignUpSuccess={handleSignUpSuccess} // Pass sign up success handler
+        onSignUpSuccess={handleSignUpSuccess}
+        onSwitchToLogin={switchToLogin}
       />
     </>
   );

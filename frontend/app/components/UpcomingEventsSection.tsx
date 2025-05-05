@@ -4,17 +4,27 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
+import { navigateIfAuthenticated } from "../utils/navigation";
 
 export default function UpcomingEventsSection() {
-  const router = useRouter(); // Initialize the router
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+  
+  // Get the showLoginPopup function from a shared context or state management
+  const showLoginPopup = () => {
+    // This will be implemented using global state
+    window.dispatchEvent(new CustomEvent('show-login-popup'));
+  };
   
   const handleBookSlotClick = () => {
-    router.push("/booking"); // Navigate to the BookingPage
+    // Use the utility function to handle protected navigation
+    navigateIfAuthenticated(router, "/booking", isAuthenticated, showLoginPopup);
   };
   
   const handleViewDetailsClick = () => {
+    // Public route, anyone can access
     router.push("/palestine-run-2025");
   };
   

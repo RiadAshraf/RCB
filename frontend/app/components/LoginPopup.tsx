@@ -11,9 +11,15 @@ interface LoginPopupProps {
   onClose: () => void;
   isVisible: boolean;
   onLoginSuccess: (email: string) => void; // Callback for login success
+  onSwitchToSignUp?: () => void; // New prop to switch to sign up popup
 }
 
-export default function LoginPopup({ onClose, isVisible, onLoginSuccess }: LoginPopupProps) {
+export default function LoginPopup({ 
+  onClose, 
+  isVisible, 
+  onLoginSuccess,
+  onSwitchToSignUp 
+}: LoginPopupProps) {
   const [loginStatus, setLoginStatus] = useState<"idle" | "success" | "failure">("idle");
   const [email, setEmail] = useState("");
 
@@ -37,6 +43,13 @@ export default function LoginPopup({ onClose, isVisible, onLoginSuccess }: Login
     } else {
       setLoginStatus("failure");
     }
+  };
+  
+  // Extracted method for handling password reset
+  const handleForgotPassword = (e: React.MouseEvent) => {
+    e.preventDefault();
+    alert("Password reset link has been sent to your email address.");
+    onClose(); // Close login popup
   };
 
   if (!isVisible) return null;
@@ -97,12 +110,15 @@ export default function LoginPopup({ onClose, isVisible, onLoginSuccess }: Login
                 required
                 className="mt-1"
               />
-              <Link
-                href="#"
-                className="text-sm text-blue-600 hover:underline mt-2 block text-right"
-              >
-                Forgot your password?
-              </Link>
+              <div className="flex justify-end mt-2">
+                <Button
+                  variant="link"
+                  className="text-sm text-blue-600 p-0 h-auto"
+                  onClick={handleForgotPassword}
+                >
+                  Forgot your password?
+                </Button>
+              </div>
             </div>
 
             {/* Login Button */}
@@ -110,6 +126,28 @@ export default function LoginPopup({ onClose, isVisible, onLoginSuccess }: Login
               Login
             </Button>
           </form>
+
+          {/* Sign Up Link */}
+          <div className="mt-4 text-center">
+            <p className="text-gray-600">
+              Don&apos;t have an account?{" "}
+              <Button 
+                variant="link" 
+                className="text-blue-600 p-0 h-auto font-medium"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (onSwitchToSignUp) {
+                    onClose(); // Close login popup
+                    setTimeout(() => {
+                      onSwitchToSignUp(); // Open signup popup after a brief delay
+                    }, 100); // Small delay for smoother transition
+                  }
+                }}
+              >
+                Sign up
+              </Button>
+            </p>
+          </div>
 
           {/* Login Status Messages */}
           {loginStatus === "success" && (
