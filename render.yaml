@@ -4,8 +4,8 @@ services:
     name: runners-community-bd
     runtime: node
     plan: free
-    buildCommand: npm install && (npm run dev:build || npm run dev)
-    startCommand: npm run dev
+    buildCommand: cd frontend/app && npm install && npm run build
+    startCommand: cd frontend/app && npm run start
     envVars:
       - key: NODE_ENV
         value: production
