@@ -1,0 +1,26 @@
+services:
+  # Web service
+  - type: web
+    name: runners-community-bd
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://api.runnerscommunitybd.com
+    autoDeploy: true
+    branch: frontend
+    healthCheckPath: /
+    buildFilter:
+      paths:
+        - 'app/**'
+        - 'components/**' 
+        - 'public/**'
+        - 'utils/**'
+        - 'context/**'
+        - 'next.config.js'
+        - 'package.json'
+        - 'tsconfig.json'
