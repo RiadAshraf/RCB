@@ -16,11 +16,11 @@ services:
     healthCheckPath: /
     buildFilter:
       paths:
-        - 'app/**'
-        - 'components/**' 
-        - 'public/**'
-        - 'utils/**'
-        - 'context/**'
-        - 'next.config.js'
-        - 'package.json'
-        - 'tsconfig.json'
+        - 'frontend/app/app/**'
+        - 'frontend/app/components/**' 
+        - 'frontend/app/public/**'
+        - 'frontend/app/utils/**'
+        - 'frontend/app/context/**'
+        - 'frontend/app/next.config.js'
+        - 'frontend/app/package.json'
+        - 'frontend/app/tsconfig.json'
