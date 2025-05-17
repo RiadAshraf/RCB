@@ -80,19 +80,21 @@ export default function UpcomingEventsSection() {
                 ))}
               </div>
               
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <Button 
-                  className="bg-red-600 text-white hover:bg-red-700"
+                  className="bg-red-600 text-white hover:bg-red-700 w-full sm:w-auto"
                   onClick={handleViewDetailsClick}
                 >
                   View Event Details
                 </Button>
 
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-blue-600">{featuredEvent.registrationStatus}</Badge>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                  <Badge className="bg-blue-600 whitespace-normal text-center sm:whitespace-nowrap">
+                    {featuredEvent.registrationStatus}
+                  </Badge>
                   <Button 
                     variant="outline" 
-                    className="border-red-600 text-red-600 hover:bg-red-50"
+                    className="border-red-600 text-red-600 hover:bg-red-50 w-full sm:w-auto mt-2 sm:mt-0"
                     onClick={handleBookSlotClick}
                   >
                     Register Now
