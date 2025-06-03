@@ -20,6 +20,15 @@ interface Category {
   unit: string;
 }
 
+// First, define an interface for the API response
+interface CategoryApiResponse {
+  categoryId: number;
+  name: string | null;
+  distance: number | null;
+  unit: string | null;
+  // Add other possible fields that might come from the API
+}
+
 export default function Book() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
@@ -78,7 +87,7 @@ export default function Book() {
         if (Array.isArray(data.data)) {
           // Validate and sanitize category data
           const validCategories = data.data
-            .map((item: { categoryId: any; name: any; distance: any; unit: any; }) => ({
+            .map((item: CategoryApiResponse) => ({
               id: item.categoryId,
               name: item.name || 'Unnamed Category',
               distance: item.distance || 0,

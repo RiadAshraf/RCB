@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, Printer, Home, Calendar } from "lucide-react";
+import { CheckCircle2, Printer, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -130,7 +130,7 @@ export default function RegistrationSuccess() {
           <div className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md text-center">
             <h1 className="text-2xl font-bold mb-4 text-red-600">Registration Not Found</h1>
             <p className="mb-6">
-              We couldn't find the registration details you're looking for. Please try again or contact support.
+              We couldn&apos;t find the registration details you&apos;re looking for. Please try again or contact support.
             </p>
             <Button onClick={() => router.push("/booking")}>
               Return to Registration
@@ -233,7 +233,7 @@ export default function RegistrationSuccess() {
 
           {/* Next Steps */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <h2 className="font-semibold text-blue-800 mb-2">What's Next?</h2>
+            <h2 className="font-semibold text-blue-800 mb-2">What&apos;s Next?</h2>
             <ul className="list-disc list-inside text-blue-700 space-y-1">
               <li>Check your email for a confirmation</li>
               <li>Add the event to your calendar</li>
