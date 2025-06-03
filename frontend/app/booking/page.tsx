@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,10 +10,23 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, ArrowRight } from "lucide-react"; // Add these icons
+import { ArrowLeft, ArrowRight } from "lucide-react";
+
+// Define category interface
+interface Category {
+  id: number;
+  name: string;
+  distance: number;
+  unit: string;
+}
 
 export default function Book() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  
+  // Updated form state with all required fields
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -20,17 +34,68 @@ export default function Book() {
     birthDate: "",
     sex: "",
     bloodGroup: "",
+    allergies: "",
+    medications: "",
+    fitnessLevel: "",
+    previousMarathons: "0",
     fathersName: "",
     mothersName: "",
     emergencyPhoneNumber: "",
+    emergencyContactRelationship: "",
+    emergencyContactEmail: "",
+    isLocal: true,
+    country: "Bangladesh",
     address: {
+      Division: "",
       District: "",
       Upazilla: "",
       Thana: "",
     },
     hasDisability: false,
     disabilityDescription: "",
+    eventId: "1", // Default event ID
+    categoryId: "",
+    paymentMethod: "bKash",
+    transactionId: "",
+    paymentAmount: "1500", // Default amount
+    tShirtSize: "",
+    additionalNotes: "",
   });
+
+  // Fetch categories when component mounts
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const apiBaseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+        const response = await fetch(`${apiBaseUrl}/api/events/${formData.eventId}/categories`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch categories');
+        }
+        
+        const data = await response.json();
+        console.log("Fetched categories:", data);
+        if (Array.isArray(data.data)) {
+          // Validate and sanitize category data
+          const validCategories = data.data
+            .map((item: { categoryId: any; name: any; distance: any; unit: any; }) => ({
+              id: item.categoryId,
+              name: item.name || 'Unnamed Category',
+              distance: item.distance || 0,
+              unit: item.unit || 'km'
+            }));
+          console.log("Valid categories:", validCategories);
+          setCategories(validCategories);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setIsLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, [formData.eventId]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -59,7 +124,10 @@ export default function Book() {
       formData.phoneNumber.trim() === "" ||
       formData.birthDate.trim() === "" ||
       formData.sex.trim() === "" ||
-      formData.bloodGroup.trim() === ""
+      formData.bloodGroup.trim() === "" ||
+      formData.fitnessLevel.trim() === "" ||
+      formData.tShirtSize.trim() === "" ||
+      formData.categoryId === ""
     ) {
       alert("Please fill in all required fields");
       return false;
@@ -81,10 +149,74 @@ export default function Book() {
     window.scrollTo(0, 0);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Generate bKash transaction ID
+  const generateTransactionId = () => {
+    return "BKH" + Math.floor(Math.random() * 10000000000);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form Data Submitted:", formData);
-    // Add your submission logic here
+    
+    // Generate transaction ID if not provided
+    const transactionId = formData.transactionId || generateTransactionId();
+    
+    // Create API request body from form data
+    const registrationData = {
+      firstName: formData.fullName.split(' ')[0],
+      lastName: formData.fullName.split(' ').slice(1).join(' '),
+      email: formData.email,
+      phone: formData.phoneNumber,
+      dateOfBirth: formData.birthDate,
+      gender: formData.sex.toLowerCase(),
+      bloodType: formData.bloodGroup,
+      medicalConditions: formData.hasDisability ? formData.disabilityDescription : "None",
+      allergies: formData.allergies || "None",
+      medications: formData.medications || "None",
+      fitnessLevel: formData.fitnessLevel,
+      previousMarathons: parseInt(formData.previousMarathons) || 0,
+      emergencyContactName: formData.fathersName || formData.mothersName,
+      emergencyContactRelationship: formData.emergencyContactRelationship,
+      emergencyContactPhone: formData.emergencyPhoneNumber,
+      emergencyContactEmail: formData.emergencyContactEmail || "",
+      isLocal: formData.isLocal,
+      country: formData.country,
+      division: formData.address.Division || "",
+      district: formData.address.District,
+      upazilla: formData.address.Upazilla,
+      eventId: parseInt(formData.eventId),
+      categoryId: parseInt(formData.categoryId),
+      paymentMethod: formData.paymentMethod,
+      transactionId: transactionId,
+      paymentAmount: parseFloat(formData.paymentAmount),
+      paymentDate: new Date().toISOString(),
+      tShirtSize: formData.tShirtSize,
+      dietaryRequirements: "None", // We removed this from UI as requested
+      additionalNotes: formData.additionalNotes || ""
+    };
+
+    try {
+      const apiBaseUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+      const response = await fetch(`${apiBaseUrl}/api/registration`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registrationData),
+      });
+
+      const data = await response.json();
+      
+      if (data.success) {
+        console.log("Registration successful:", data);
+        router.push(`/booking/success?id=${data.data.registration.id}`);
+      } else {
+        console.error("Registration failed:", data);
+        alert("Registration failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting registration:", error);
+      alert("An error occurred. Please try again later.");
+    }
   };
 
   const renderProgressBar = () => {
@@ -224,6 +356,160 @@ export default function Book() {
         </Select>
       </div>
 
+      {/* Race Category */}
+      <div>
+        <Label htmlFor="categoryId" className="text-gray-700">
+          Race Category
+        </Label>
+        <Select
+          onValueChange={(value) => {
+            setFormData((prev) => ({
+              ...prev,
+              categoryId: value,
+            }));
+          }}
+          value={formData.categoryId}
+          disabled={isLoadingCategories}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder={isLoadingCategories ? "Loading categories..." : "Select Race Category"} />
+          </SelectTrigger>
+          <SelectContent>
+            {isLoadingCategories ? (
+              <SelectItem value="loading" disabled>Loading categories...</SelectItem>
+            ) : categories.length > 0 ? (
+              // Add filtering to remove invalid categories and provide safe toString conversion
+              categories
+                .filter(category => category && category.id !== undefined)
+                .map((category) => (
+                  <SelectItem 
+                    key={category.id} 
+                    value={String(category.id)}
+                  >
+                    {category.name || 'Unnamed'} ({category.distance || 0} {category.unit || 'km'})
+                  </SelectItem>
+                ))
+            ) : (
+              <SelectItem value="no-categories" disabled>No categories available</SelectItem>
+            )}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Fitness Level */}
+      <div>
+        <Label htmlFor="fitnessLevel" className="text-gray-700">
+          Fitness Level
+        </Label>
+        <Select
+          onValueChange={(value) =>
+            setFormData((prev) => ({
+              ...prev,
+              fitnessLevel: value,
+            }))
+          }
+          value={formData.fitnessLevel}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Fitness Level" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Beginner">Beginner</SelectItem>
+            <SelectItem value="Intermediate">Intermediate</SelectItem>
+            <SelectItem value="Advanced">Advanced</SelectItem>
+            <SelectItem value="Professional">Professional</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Previous Marathons */}
+      <div>
+        <Label htmlFor="previousMarathons" className="text-gray-700">
+          Previous Marathons Participated
+        </Label>
+        <Input
+          id="previousMarathons"
+          name="previousMarathons"
+          type="number"
+          min="0"
+          placeholder="Enter number of previous marathons..."
+          value={formData.previousMarathons}
+          onChange={handleChange}
+        />
+      </div>
+
+      {/* T-Shirt Size */}
+      <div>
+        <Label htmlFor="tShirtSize" className="text-gray-700">
+          T-Shirt Size
+        </Label>
+        <Select
+          onValueChange={(value) =>
+            setFormData((prev) => ({
+              ...prev,
+              tShirtSize: value,
+            }))
+          }
+          value={formData.tShirtSize}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select T-Shirt Size" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="XS">XS</SelectItem>
+            <SelectItem value="S">S</SelectItem>
+            <SelectItem value="M">M</SelectItem>
+            <SelectItem value="L">L</SelectItem>
+            <SelectItem value="XL">XL</SelectItem>
+            <SelectItem value="XXL">XXL</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Allergies */}
+      <div>
+        <Label htmlFor="allergies" className="text-gray-700">
+          Allergies (if any)
+        </Label>
+        <Input
+          id="allergies"
+          name="allergies"
+          placeholder="Enter any allergies..."
+          value={formData.allergies}
+          onChange={handleChange}
+        />
+      </div>
+
+      {/* Medications */}
+      <div>
+        <Label htmlFor="medications" className="text-gray-700">
+          Current Medications (if any)
+        </Label>
+        <Input
+          id="medications"
+          name="medications"
+          placeholder="Enter any medications..."
+          value={formData.medications}
+          onChange={handleChange}
+        />
+      </div>
+
+      {/* Local or International */}
+      <div>
+        <Label className="text-gray-700 flex items-center space-x-2">
+          <Checkbox
+            checked={formData.isLocal}
+            onCheckedChange={(checked) =>
+              setFormData((prev) => ({
+                ...prev,
+                isLocal: Boolean(checked),
+              }))
+            }
+          />
+          <span>I am a resident of Bangladesh</span>
+        </Label>
+      </div>
+
       {/* Next Button */}
       <Button
         type="button"
@@ -284,9 +570,82 @@ export default function Book() {
         />
       </div>
 
+      {/* Emergency Contact Relationship */}
+      <div>
+        <Label htmlFor="emergencyContactRelationship" className="text-gray-700">
+          Relationship with Emergency Contact
+        </Label>
+        <Select
+          onValueChange={(value) =>
+            setFormData((prev) => ({
+              ...prev,
+              emergencyContactRelationship: value,
+            }))
+          }
+          value={formData.emergencyContactRelationship}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Relationship" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Parent">Parent</SelectItem>
+            <SelectItem value="Spouse">Spouse</SelectItem>
+            <SelectItem value="Sibling">Sibling</SelectItem>
+            <SelectItem value="Child">Child</SelectItem>
+            <SelectItem value="Friend">Friend</SelectItem>
+            <SelectItem value="Other">Other</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Emergency Contact Email */}
+      <div>
+        <Label htmlFor="emergencyContactEmail" className="text-gray-700">
+          Emergency Contact Email (Optional)
+        </Label>
+        <Input
+          id="emergencyContactEmail"
+          name="emergencyContactEmail"
+          type="email"
+          placeholder="Enter emergency contact email..."
+          value={formData.emergencyContactEmail}
+          onChange={handleChange}
+        />
+      </div>
+
       {/* Address */}
       <div>
-        <Label htmlFor="address.District" className="text-gray-700">
+        <Label htmlFor="address.Division" className="text-gray-700">
+          Division
+        </Label>
+        <Select
+          onValueChange={(value) =>
+            setFormData((prev) => ({
+              ...prev,
+              address: {
+                ...prev.address,
+                Division: value,
+              },
+            }))
+          }
+          value={formData.address.Division}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Division" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Dhaka">Dhaka</SelectItem>
+            <SelectItem value="Chittagong">Chittagong</SelectItem>
+            <SelectItem value="Rajshahi">Rajshahi</SelectItem>
+            <SelectItem value="Khulna">Khulna</SelectItem>
+            <SelectItem value="Barisal">Barisal</SelectItem>
+            <SelectItem value="Sylhet">Sylhet</SelectItem>
+            <SelectItem value="Rangpur">Rangpur</SelectItem>
+            <SelectItem value="Mymensingh">Mymensingh</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Label htmlFor="address.District" className="text-gray-700 mt-4">
           District
         </Label>
         <Input
@@ -297,6 +656,7 @@ export default function Book() {
           onChange={handleChange}
           required
         />
+        
         <Label htmlFor="address.Upazilla" className="text-gray-700 mt-4">
           Upazilla
         </Label>
@@ -308,6 +668,7 @@ export default function Book() {
           onChange={handleChange}
           required
         />
+        
         <Label htmlFor="address.Thana" className="text-gray-700 mt-4">
           Thana
         </Label>
@@ -318,6 +679,46 @@ export default function Book() {
           value={formData.address.Thana}
           onChange={handleChange}
           required
+        />
+      </div>
+
+      {/* Payment Method */}
+      <div>
+        <Label htmlFor="paymentMethod" className="text-gray-700">
+          Payment Method
+        </Label>
+        <Select
+          onValueChange={(value) =>
+            setFormData((prev) => ({
+              ...prev,
+              paymentMethod: value,
+            }))
+          }
+          value={formData.paymentMethod}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select Payment Method" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="bKash">bKash</SelectItem>
+            <SelectItem value="Nagad">Nagad</SelectItem>
+            <SelectItem value="Rocket">Rocket</SelectItem>
+            <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {/* Transaction ID - Only show if not auto-generated */}
+      <div>
+        <Label htmlFor="transactionId" className="text-gray-700">
+          Transaction ID (Leave blank for auto-generation)
+        </Label>
+        <Input
+          id="transactionId"
+          name="transactionId"
+          placeholder="Enter transaction ID if you have one..."
+          value={formData.transactionId}
+          onChange={handleChange}
         />
       </div>
 
@@ -344,6 +745,20 @@ export default function Book() {
             className="mt-2"
           />
         )}
+      </div>
+
+      {/* Additional Notes */}
+      <div>
+        <Label htmlFor="additionalNotes" className="text-gray-700">
+          Additional Notes (Optional)
+        </Label>
+        <Textarea
+          id="additionalNotes"
+          name="additionalNotes"
+          placeholder="Any additional information you'd like to share..."
+          value={formData.additionalNotes}
+          onChange={handleChange}
+        />
       </div>
 
       {/* Navigation Buttons */}
